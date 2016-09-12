@@ -28,23 +28,22 @@ class Api extends REST_Controller
 
     public function clientes_post()
     {
-        if (!$this->post('nome')) {
-            $this->response(array('error' => 'Nenhum dado recebido.'), 400);
-        } else {
-            $data = array(
-                'nome_cliente' => $this->post('nome'),
-                'dt_nasc_cliente' => $this->post('nascimento'),
-                'rg_cliente' => $this->post('rg'),
-                'cpf_cliente' =>$this->post('cpf'),
-                'telefone_cliente' =>$this->post('telefone')
-            );
-       }
-         $cliente = $this->clientes->post_cliente($data);
+        $dt = explode('/', $this->post('dt_nasc_cliente') );
+        $data = array(
+            'nome_cliente' => $this->post('nome_cliente'),
+            'dt_nasc_cliente' => date('Y-m-d', strtotime($dt[2].'-'.$dt[1].'-'.$dt[0])),
+            'rg_cliente' => $this->post('rg_cliente'),
+            'cpf_cliente' => $this->post('cpf_cliente'),
+            'telefone_cliente' => $this->post('telefone_cliente')
+        );
+
+        $cliente = $this->clientes->post_cliente($data);
         if ($cliente > 0) {
-            $message = array('id' => $cliente, 'nome' => $this->post('nome'));
+            $message = array('id' => $cliente, 'nome' => $this->post('nome_cliente'));
             $this->response($message, 200);
         }
     }
+
 
 
 
@@ -52,15 +51,16 @@ class Api extends REST_Controller
     {
      // Teoricamente essa função deveria usar PUT ao invés de POST, mas o Codeigniter não é muito fã de PUT :(
 
-
+        $dt = explode('/', $this->post('dt_nasc_cliente') );
         $data = array(
-            'nome_cliente' => $this->post('nome'),
-            'dt_nasc_cliente' => $this->post('nascimento'),
-            'rg_cliente' => $this->post('rg'),
-            'cpf_cliente' =>$this->post('cpf'),
-            'telefone_cliente' =>$this->post('telefone')
+            'nome_cliente' => $this->post('nome_cliente'),
+            'dt_nasc_cliente' => date('Y-m-d', strtotime($dt[2].'-'.$dt[1].'-'.$dt[0])),
+            'rg_cliente' => $this->post('rg_cliente'),
+            'cpf_cliente' =>$this->post('cpf_cliente'),
+            'telefone_cliente' =>$this->post('telefone_cliente')
         );
-        $this->clientes->update_cliente($this->post('id'), $data);
+
+        $this->clientes->update_cliente($this->post('id_cliente'), $data);
         $message = array('success' => $this->post('nome') . ' Updated!');
         $this->response($message, 200);
     }
